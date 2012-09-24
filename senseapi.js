@@ -33,10 +33,15 @@ function SenseApi() {
 	this.request = getXMLHttpRequest();
 	this.session_id = "";
 	this.resp_status = 0;
-	this.resp_headers = "";
+	this.resp_headers = {};
 	this.resp_data = "";
 	this.error_code = 0;
+	this.api_url = "https://api.sense-os.nl";
 
+	// api settings functions
+	this.SetSessionId					= SetSessionId;
+	this.SetServer						= SetServer;
+		
 	// List of Functions for SenseApi object
 	this.SenseApiCall 					= SenseApiCall;
 	
@@ -51,6 +56,16 @@ function SenseApi() {
 	this.SensorDataPost					= SensorDataPost;
 	this.SensorsDataPost				= SensorsDataPost;
 	
+	this.SensorsTagsGet					= SensorsTagsGet;
+	this.SensorTagsGet					= SensorTagsGet;
+	this.SensorTagsPost					= SensorTagsPost;
+	this.SensortagsDelete				= SensorTagsDelete
+	
+	this.EnvironmentsGet				= EnvironmentsGet;
+	this.EnvironmentGet					= EnvironmentGet;
+	this.EnvironmentPost				= EnvironmentPost;
+	this.EnvironmentDelete				= EnvironmentDelete;
+	
 	this.ServicesGet					= ServicesGet;
 	this.ServicesPost					= ServicesPost;
 	this.ServicesDelete					= ServicesDelete;
@@ -61,10 +76,34 @@ function SenseApi() {
 }
 
 /**
+ * In case a session_id is already available (from  a cookie for instance), pass it using this function
+ * @param session_id:	string containing valid session_id
+ */
+function SetSessionId (session_id) {
+	this.session_id = session_id;
+}
+
+/**
+ * Select which server to use, live or dev
+ * @param server:	string indicating server to use ('live' or 'dev')
+ */
+function SetServer (server) {
+	if ( server == 'live') {
+		this.api_url = 'https://api.sense-os.nl';
+		return true;
+	}
+	else if (server == 'dev') {
+		this.api_url = 'http://api.dev.sense-os.nl';
+		return true;
+	}
+	return false;
+}
+
+/**
  * Base API call method
  * @param method 	"GET", "POST", "DELETE", "PUT"
  * @param url 		url in string format
- * @param data 		json object
+ * @param data 		object of parameters. If method is GET or DELETE, will be sent as url parameters
  * @param headers 	array of json objects {"header_name":"blabla","header_value":"balbalb"}
  */
 function SenseApiCall (method, url, data, headers) {
@@ -72,12 +111,23 @@ function SenseApiCall (method, url, data, headers) {
 		this.error_code = 1;
 		return false;
 	}
-	if (method != "GET" && method != "POST" && method != "DELETE") {
+	if (method != "GET" && method != "POST" && method != "DELETE" && method != "PUT") {
 		this.error_code = 2;
 		return false;
 	}
 	
-	this.request.open(method, url, false);
+	// construct the url
+	var full_url = this.api_url+url;
+	if (method == "GET" || method == "DELETE") {
+		// supply data as url parameters
+		var str = [];
+		for(var p in data) {
+			str.push(encodeURIComponent(p) + "=" + encodeURIComponent(data[p]));
+		}
+		full_url += "?"+str.join("&");
+	}
+	
+	this.request.open(method, full_url, false);
 	for (var i=0; i<headers.length; i++) {
 		this.request.setRequestHeader(headers[i].header_name, headers[i].header_value);
 	}
@@ -89,11 +139,21 @@ function SenseApiCall (method, url, data, headers) {
 	
 	this.request.send(JSON.stringify(data));
 	
+	// obtain status
 	this.resp_status = this.request.status;
-	this.resp_headers = this.request.getResponseHeader("Location");
-	console.log("resp_headers: "+this.resp_headers);
-	console.log("getResponseHeader: "+this.request.getResponseHeader("Location"));
 	
+	// obtain headers
+	resp_h = this.request.getAllResponseHeaders();
+	resp_h = resp_h.split(/\r\n|\r|\n/);
+	this.resp_headers = {};
+	for (var i=0; i<resp_h.length; i++) {
+		h = resp_h[i].split(": ");
+		if(h[0] != "") 
+			this.resp_headers[h[0]] = h[1];
+	}
+	console.log(this.resp_headers);
+	
+	// obtain response data
 	this.resp_data = this.request.responseText;
 	
 	if (this.resp_status == 200 || this.resp_status == 201) {
@@ -117,7 +177,7 @@ function SenseApiCall (method, url, data, headers) {
  */
 function AuthenticateSessionId (username, password) {
 	data = {"username":username, "password":password};
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/login.json", data, [])) {
+	if (this.SenseApiCall("POST", "/login.json", data, [])) {
 		this.session_id = JSON.parse(this.resp_data).session_id;
 		return true;
 	}
@@ -130,7 +190,7 @@ function AuthenticateSessionId (username, password) {
  * Logout a session id at CommonSense
  */
 function LogoutSessionId () {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/logout.json", {}, [])) {
+	if (this.SenseApiCall("POST", "/logout.json", {}, [])) {
 		this.session_id = "";
 		return true;
 	}
@@ -155,13 +215,13 @@ function SensorsGet (parameters, sensor_id) {
 		return false;
 	}
 	if (parameters) {
-		if (this.SenseApiCall("GET", "https://api.sense-os.nl/sensors.json", parameters, []))
+		if (this.SenseApiCall("GET", "/sensors.json", parameters, []))
 			return true;
 		else
 			return false;
 	}
 	if (sensor_id) {
-		if (this.SenseApiCall("GET", "https://api.sense-os.nl/sensors/"+sensor_id+".json", {}, [])) 
+		if (this.SenseApiCall("GET", "/sensors/"+sensor_id+".json", {}, [])) 
 			return true;
 		else
 			return false;
@@ -176,7 +236,7 @@ function SensorsGet (parameters, sensor_id) {
  * @param sensor_id		sensor_id of sensor to delete
  */
 function SensorsDelete (sensor_id) {
-	if (this.SenseApiCall("DELETE", "https://api.sense-os.nl/sensors/"+sensor_id+".json", {}, [])) 
+	if (this.SenseApiCall("DELETE", "/sensors/"+sensor_id+".json", {}, [])) 
 		return true;
 	else
 		return false;
@@ -187,7 +247,7 @@ function SensorsDelete (sensor_id) {
  * @param parameters	sensor to create online in object - {'sensor': {'name':'', 'display_name':'', 'device_type':'', 'pager_type':'', 'data_type':'', 'data_structure':''}}
  */
 function SensorsPost (parameters) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors.json", parameters, [])) 
+	if (this.SenseApiCall("POST", "/sensors.json", parameters, [])) 
 		return true;
 	else
 		return false;
@@ -204,7 +264,7 @@ function SensorsPost (parameters) {
  * @param parameters	specifics of the query - {'page':0, 'per_page':100, 'start_date':0, 'end_date':4294967296, 'date':0, 'next':0, 'last':0, 'sort':'ASC', 'total':1}
  */
 function SensorDataGet (sensor_id, parameters) {
-	if (this.SenseApiCall("GET", "https://api.sense-os.nl/sensors/"+sensor_id+"/data.json", parameters, []))
+	if (this.SenseApiCall("GET", "/sensors/"+sensor_id+"/data.json", parameters, []))
 		return true;
 	else
 		return false;
@@ -216,7 +276,7 @@ function SensorDataGet (sensor_id, parameters) {
  * @param data			the data to insert - {'data': [{'value':0, 'date':0}]}
  */
 function SensorDataPost (sensor_id, data) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors/"+sensor_id+"/data.json", data, []))
+	if (this.SenseApiCall("POST", "/sensors/"+sensor_id+"/data.json", data, []))
 		return true;
 	else
 		return false;
@@ -227,12 +287,109 @@ function SensorDataPost (sensor_id, data) {
  * @param data		the data to insert - {'sensors':[{'sensor_id':1, 'data':[{'value':0, 'date':0}]}]}
  */
 function SensorsDataPost (data) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors/data.json", data, []))
+	if (this.SenseApiCall("POST", "/sensors/data.json", data, []))
 		return true;
 	else
 		return false;
 }
 
+///////////////
+/// T A G S ///
+///////////////
+
+/**
+ * Retrieve terms associated to all sensors
+ * @param parameters 	object containing parameters for the call - {"own_sensors": 1}
+ */
+function SensorsTagsGet (parameters) {
+	if (this.SenseApiCall("GET", "/sensors/terms.json", parameters, []))
+		return true;
+	else 
+		return false;
+}
+
+/**
+ * Retrieve terms associated with a specific sensor
+ * @param sensor_id 	id of the sensor te retrieve terms from
+ * @param parameters	object containing parameters for the call - {"own_sensors": 1}
+ */
+function SensorTagsGet (sensor_id, parameters) {
+	if (this.SenseApiCall("GET", "/sensors/"+sensor_id+"/tags.json", parameters, []))
+		return true;
+	else
+		return false;
+}
+
+/**
+ * Post tags to a sensor
+ * @param sensor_id		id of the sensor to post tags to
+ * @param parameters	object containing the tags to post to the sensor - {"tags": {"sensor_type": "temperature", "measurement_unit": "celcius"}}
+ */
+function SensorTagsPost (sensor_id, parameters) {
+	if (this.SenseApiCall("POST", "/sensors/"+sensor_id+"/tags.json", parameters, []))
+		return true;
+	else
+		return false;
+}
+
+/**
+ * Delete all tags associated to a sensor
+ * @param sensor_id		id of the sensor for which to remove tags
+ */
+function SensorTagsDelete (sensor_id) {
+	if (this.SenseApiCall("DELETE", "/sensors/"+sensor_id+"/tags.json", {}, [])) 
+		return true;
+	else
+		return false;
+}
+
+
+///////////////////////////////
+/// E N V I R O N M E N T S ///
+///////////////////////////////
+
+/**
+ * Retrieve all the user's environments from CommonSense
+ */
+function EnvironmentsGet () {
+	if (this.SenseApiCall("GET", "/environments.json", {}, [])) 
+		return true;
+	else
+		return false;
+}
+ 
+/**
+ * Retrieve information on a specific environment
+ * @param environment_id 	id of the environment which to retrieve
+ */
+function EnvironmentGet (environment_id) {
+	if (this.SenseApiCall("GET", "/environments/"+environment_id+".json", {}, []))
+		return true;
+	else
+		return false;
+}
+
+/**
+ * Create new environment in CommonSense
+ * @param parameters		the specification of the environment to create
+ */
+function EnvironmentPost (parameters) {
+	if (this.SenseApiCall("POST", "/environments.json", parameters, [])) 
+		return true;
+	else
+		return false;
+}
+			
+/**
+ * Delete environment from CommonSense
+ * @param environment_id 	id of the environment to delete
+ */
+function EnvironmentDelete (environment_id) {
+	if (this.SenseApiCall("DELETE", "/environments/"+environment_id+".json", {}, []))
+		return true;
+	else
+		return false;
+}
 
 ///////////////////////
 /// S E R V I C E S ///
@@ -243,7 +400,7 @@ function SensorsDataPost (data) {
  * @param sensor_id		the sensor_id to retrieve the services from
  */
 function ServicesGet (sensor_id) {
-	if (this.SenseApiCall("GET", "https://api.sense-os.nl/sensors/"+sensor_id+"/services.json"), {}, [])
+	if (this.SenseApiCall("GET", "/sensors/"+sensor_id+"/services.json", {}, []))
 		return true;
 	else
 		return false;
@@ -255,7 +412,7 @@ function ServicesGet (sensor_id) {
  * @parma parameters	details of the service to create - {'service':{'name':'math_service', 'data_fields':['sensor']}, 'sensor':{'name':'', 'device_type':''}}
  */
 function ServicesPost (sensor_id, parameters) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors/"+sensor_id+"/services.json", parameters, []))
+	if (this.SenseApiCall("POST", "/sensors/"+sensor_id+"/services.json", parameters, []))
 		return true;
 	else
 		return false;
@@ -267,7 +424,7 @@ function ServicesPost (sensor_id, parameters) {
  * @param service_id	service_id to delete
  */
 function ServicesDelete (sensor_id, service_id) {
-	if (this.SenseApiCall("DELETE", "https://api.sense-os.nl/sensors/"+sensor_id+"/services/"+service_id+".json", {}, []))
+	if (this.SenseApiCall("DELETE", "/sensors/"+sensor_id+"/services/"+service_id+".json", {}, []))
 		return true;
 	else
 		return false;
@@ -280,7 +437,7 @@ function ServicesDelete (sensor_id, service_id) {
  * @param parameters	expression to set for the service - {'parameters':['_sensorname_datafield']}
  */
 function ServicesSetExpression (sensor_id, service_id, parameters) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors/"+sensor_id+"/services/"+service_id+"/SetExpression.json", parameters, []))
+	if (this.SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/SetExpression.json", parameters, []))
 		return true;
 	else
 		return false;
@@ -293,7 +450,7 @@ function ServicesSetExpression (sensor_id, service_id, parameters) {
  * @param parameters	the desired setting (basically 0 or 1) - {'parameters':[1]}
  */
 function ServicesSetUseDataTimestamp (sensor_id, service_id, parameters) {
-	if (this.SenseApiCall("POST", "https://api.sense-os.nl/sensors/"+sensor_id+"/services/"+service_id+"/SetUseDataTimestamp.json", parameters, []))
+	if (this.SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/SetUseDataTimestamp.json", parameters, []))
 		return true;
 	else
 		return false;
@@ -307,7 +464,7 @@ function ServicesSetUseDataTimestamp (sensor_id, service_id, parameters) {
  * Gets information of current user, based on session_id.
  */
 function UsersGetCurrent () {
-	if (this.SenseApiCall("GET", "https://api.sense-os.nl/users/current.json", {}, []))
+	if (this.SenseApiCall("GET", "/users/current.json", {}, []))
 		return true;
 	else 
 		return false;
