@@ -30,8 +30,10 @@
  */
 
 var SenseApi = (function () {
+// the object to return at the end
 	var api = {};
 
+// helper function to obtain an XMLHttpRequest object
     getXMLHttpRequest = function () {
         r = false;
         if (window.XMLHttpRequest) { // Mozilla, Safari,...
@@ -69,7 +71,7 @@ var SenseApi = (function () {
 	var api_url				= "https://api.sense-os.nl";
 	var server              = "live";
 
-	// private funtions
+// private funtions
 	SenseApiCall = function (method, url, data, headers) {
 		if (request == false) {
 			error_code = 1;
@@ -134,8 +136,7 @@ var SenseApi = (function () {
 	};
 
 
-
-	// public access functions
+// public access functions
 	api.getSessionId = function () {
         return session_id;
     };
@@ -164,7 +165,7 @@ var SenseApi = (function () {
         return error_code;
     };
 
-    // public set functions
+// public set functions
     api.setSessionId = function (s) {
         session_id = s;
     };
@@ -185,7 +186,10 @@ var SenseApi = (function () {
         return false;
     };
 
-    // public api call functions
+// public api call functions
+
+    /// A U T H E N T I C A T I O N ///
+
     api.AuthenticateSessionId = function (username, password) {
         data = {"username":username, "password":password};
         if (SenseApiCall("POST", "/login.json", data, [])) {
@@ -207,6 +211,190 @@ var SenseApi = (function () {
         }
     };
 
+
+    /// S E N S O R S ///
+
+    api.SensorsGet = function (parameters, sensor_id) {
+        if (!parameters && !sensor_id) {
+            error_code = 4;
+            return false;
+        }
+        if (parameters) {
+            if (SenseApiCall("GET", "/sensors.json", parameters, []))
+                return true;
+            else
+                return false;
+        }
+        if (sensor_id) {
+            if (SenseApiCall("GET", "/sensors/"+sensor_id+".json", {}, []))
+                return true;
+            else
+                return false;
+        }
+
+        error_code = 4;
+        return false;
+
+    };
+
+    api.SensorsDelete = function (sensor_id) {
+        if (SenseApiCall("DELETE", "/sensors/"+sensor_id+".json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorsPost = function (parameters) {
+        if (SenseApiCall("POST", "/sensors.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorsFind = function (namespace, parameters) {
+        if (SenseApiCall("POST", "/sensors/find.json?namespace="+namespace, parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+
+    /// S E N S O R  D A T A ///
+
+    api.SensorDataGet = function (sensor_id, parameters) {
+        if (SenseApiCall("GET", "/sensors/"+sensor_id+"/data.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorDataPost = function (sensor_id, data) {
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/data.json", data, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorsDataPost = function (data) {
+        if (SenseApiCall("POST", "/sensors/data.json", data, []))
+            return true;
+        else
+            return false;
+    };
+
+
+    /// M E T A T A G S ///
+
+    api.SensorsMetatagsGet = function (parameters) {
+        if (SenseApiCall("GET", "/sensors/metatags.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorMetatagsGet = function (sensor_id, parameters) {
+        if (SenseApiCall("GET", "/sensors/"+sensor_id+"/metatags.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorMetatagsPost = function (sensor_id, namespace, parameters) {
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/metatags.json?namespace="+namespace, parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.SensorMetatagsDelete = function (sensor_id) {
+        if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/metatags.json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+
+    /// E N V I R O N M E N T S ///
+
+    api.EnvironmentsGet = function () {
+        if (SenseApiCall("GET", "/environments.json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.EnvironmentGet = function (environment_id) {
+        if (SenseApiCall("GET", "/environments/"+environment_id+".json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.EnvironmentPost = function (parameters) {
+        if (SenseApiCall("POST", "/environments.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.EnvironmentDelete = function (environment_id) {
+        if (SenseApiCall("DELETE", "/environments/"+environment_id+".json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+
+    /// S E R V I C E S ///
+
+    api.ServicesGet = function (sensor_id) {
+        if (SenseApiCall("GET", "/sensors/"+sensor_id+"/services.json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.ServicesPost = function (sensor_id, parameters) {
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.ServicesDelete = function (sensor_id, service_id) {
+        if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/services/"+service_id+".json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.ServicesSetExpression = function (sensor_id, service_id, parameters) {
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/SetExpression.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+    api.ServicesSetUseDataTimestamp = function (sensor_id, service_id, parameters) {
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/SetUseDataTimestamp.json", parameters, []))
+            return true;
+        else
+            return false;
+    };
+
+
+    /// U S E R S ///
+
+    api.UsersGetCurrent = function () {
+        if (SenseApiCall("GET", "/users/current.json", {}, []))
+            return true;
+        else
+            return false;
+    };
+
+
+// return the api object
 	return api;
+
 }());
 
