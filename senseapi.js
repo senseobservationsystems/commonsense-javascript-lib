@@ -13,11 +13,13 @@
  */
 
 
-/** JavaScipt CommonSense API Library
- *  Author: Freek van Polen, Sense
- *	Date: 06-09-2012
- *	Dependencies: json2.js --> https://github.com/douglascrockford/JSON-js
- *
+/**
+ * JavaScipt CommonSense API Library
+ * Author: Freek van Polen, Sense
+ * Date: 19-10-2012
+ * Dependencies:
+ *          json2.js --> https://github.com/douglascrockford/JSON-js
+ *          md5hash --> http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js
 **/
 
 /**
