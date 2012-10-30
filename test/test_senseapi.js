@@ -2,6 +2,8 @@
 //var chai = require("assert")
 
 var should = chai.should();
+var username = "";
+var password = "";
 
 describe('SenseApi.', function(){
 	
@@ -21,10 +23,14 @@ describe('SenseApi.', function(){
 		});
 	});
 	
+	
 	// authentication
     describe('AuthenticateSessionId', function(){
         it('should return true if credentials are correct', function(){
-            SenseApi.AuthenticateSessionId("GreenhouseTest", "477e9c66c4bc554dc03c1497fb7b7165").should.equal(true);
+        	var hash = CryptoJS.MD5(password).toString();
+        	console.log(hash);
+        	console.log(password + "  " + hash);
+        	SenseApi.AuthenticateSessionId(username, hash).should.equal(true);
         });
         it('should result in a session id being set', function() {
             SenseApi.getSessionId().should.not.equal('');
