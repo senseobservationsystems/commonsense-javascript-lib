@@ -40,9 +40,6 @@ var SenseApi = (function () {
         r = false;
         if (window.XMLHttpRequest) { // Mozilla, Safari,...
             r = new XMLHttpRequest();
-            if (r.overrideMimeType) {
-                r.overrideMimeType('application/json');
-            }
         }
         else if (window.ActiveXObject) { // IE
             try {
@@ -114,11 +111,11 @@ var SenseApi = (function () {
 		response_status = request.status;
 		
 		// obtain headers
-		resp_h = request.getAllResponseHeaders();
+		var resp_h = request.getAllResponseHeaders();
 		resp_h = resp_h.split(/\r\n|\r|\n/);
 		response_header = {};
 		for (var i=0; i<resp_h.length; i++) {
-			h = resp_h[i].split(": ");
+			var h = resp_h[i].split(": ");
 			if(h[0] != "") 
 				response_header[h[0]] = h[1];
 		}
@@ -193,7 +190,7 @@ var SenseApi = (function () {
     /// A U T H E N T I C A T I O N ///
 
     api.AuthenticateSessionId = function (username, password) {
-        data = {"username":username, "password":password};
+        var data = {"username":username, "password":password};
         if (SenseApiCall("POST", "/login.json", data, [])) {
             session_id = JSON.parse(response_data).session_id;
             return true;
