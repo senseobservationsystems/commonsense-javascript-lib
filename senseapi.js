@@ -60,7 +60,7 @@ var SenseApi = (function () {
         return r;
     };
 
-	// private variables
+// private variables
 	var request 			= getXMLHttpRequest();
 	var session_id 			= "";
 	var response_status 	= 0;
@@ -89,7 +89,7 @@ var SenseApi = (function () {
 			for(var p in data) {
 				str.push(encodeURIComponent(p) + "=" + encodeURIComponent(data[p]));
 			}
-			full_url += "?"+str.join("&");
+			full_url = api_url + url + "?"+str.join("&");
 		}
 		
 		request.open(method, full_url, false);
@@ -111,7 +111,19 @@ var SenseApi = (function () {
 		response_status = request.status;
 		
 		// obtain headers
-		var resp_h = request.getAllResponseHeaders();
+		response_header = {};
+		var loc = request.getResponseHeader("Location");
+		var sid = request.getResponseHeader("X-SESSION_ID")
+		if (loc != null) {
+			response_header['Location'] = loc;
+		}
+		if (sid != null) {
+			response_header['X-SESSION_ID'] = sid;
+		}
+		console.log(response_header);
+		
+		
+/**		var resp_h = request.getAllResponseHeaders();
 		resp_h = resp_h.split(/\r\n|\r|\n/);
 		response_header = {};
 		for (var i=0; i<resp_h.length; i++) {
@@ -120,6 +132,7 @@ var SenseApi = (function () {
 				response_header[h[0]] = h[1];
 		}
 		console.log(response_header);
+**/
 		
 		// obtain response data
 		response_data = request.responseText;
@@ -192,7 +205,7 @@ var SenseApi = (function () {
     api.AuthenticateSessionId = function (username, password) {
         var data = {"username":username, "password":password};
         if (SenseApiCall("POST", "/login.json", data, [])) {
-            session_id = JSON.parse(response_data).session_id;
+            session_id = response_header['X-SESSION_ID'];
             return true;
         }
         else {
@@ -213,7 +226,7 @@ var SenseApi = (function () {
 
     /// S E N S O R S ///
 
-    api.SensorsGet = function (parameters, sensor_id) {
+    api.SensorsGet = function (parameters, __sensor_id) {
         if (!parameters && !sensor_id) {
             error_code = 4;
             return false;
@@ -284,34 +297,48 @@ var SenseApi = (function () {
 
     /// M E T A T A G S ///
 
-    api.SensorsMetatagsGet = function (parameters) {
+    api.SensorsMetatagsGet = function (namespace, parameters) {
+    	var ns = (namespace != null) ? namespace : "default";
+    	parameters.namespace = ns
         if (SenseApiCall("GET", "/sensors/metatags.json", parameters, []))
             return true;
         else
             return false;
     };
 
-    api.SensorMetatagsGet = function (sensor_id, parameters) {
-        if (SenseApiCall("GET", "/sensors/"+sensor_id+"/metatags.json", parameters, []))
+    api.SensorMetatagsGet = function (sensor_id, namespace) {
+    	var ns = (namespace != null) ? namespace : "default";
+    	if (SenseApiCall("GET", "/sensors/"+sensor_id+"/metatags.json", {'namespace':ns}, []))
             return true;
         else
             return false;
     };
 
-    api.SensorMetatagsPost = function (sensor_id, namespace, parameters) {
-        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/metatags.json?namespace="+namespace, parameters, []))
+    api.SensorMetatagsPost = function (sensor_id, namespace, metatags) {
+    	var ns = (namespace != null) ? namespace : "default";
+        if (SenseApiCall("POST", "/sensors/"+sensor_id+"/metatags.json?namespace="+ns, metatags, []))
             return true;
         else
             return false;
     };
 
-    api.SensorMetatagsDelete = function (sensor_id) {
-        if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/metatags.json", {}, []))
+    
+    api.SensorMetatagsPut = function (sensor_id, namespace, metatags) {
+    	var ns = (namespace != null) ? namespace : "default";
+    	if (SenseApiCall("PUT", "/sensors/"+sensor_id+"/metatags.json?namespace="+ns, metatags, []))
+    		return true;
+    	else
+    		return false
+    }
+    
+    api.SensorMetatagsDelete = function (sensor_id, namespace) {
+    	var ns = (namespace != null) ? namespace : "default";
+        if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/metatags.json", {'namespace':ns}, []))
             return true;
         else
             return false;
     };
-
+   
 
     /// E N V I R O N M E N T S ///
 
