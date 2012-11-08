@@ -23,8 +23,8 @@ describe('CommonSense Javascript API Library', function(){
 	
 	// authentication
 	describe('Authentication by Session Id', function(){
-        it('SenseApi.AuthenticateSessionId() logs you in to CommonSense', function(){
-        	SenseApi.AuthenticateSessionId(username, CryptoJS.MD5(password).toString()).should.equal(true);
+        it('SenseApi.authenticateSessionId() logs you in to CommonSense', function(){
+        	SenseApi.authenticateSessionId(username, CryptoJS.MD5(password).toString()).should.equal(true);
         });
         it('SenseApi.getSessionId() gets the obtained session_id', function() {
             SenseApi.getSessionId().should.not.equal('');
@@ -33,8 +33,8 @@ describe('CommonSense Javascript API Library', function(){
 
     // creating sensor
     describe('Creating a Sensor', function(){
-    	it('SenseApi.SensorPost() creates a sensor', function(){
-    		SenseApi.SensorPost({"sensor":{"name":"thermometer", "display_name":"Thermometer", "device_type":"TX-1000", "data_type":"float"}}).should.equal(true);
+    	it('SenseApi.callSensorPost() creates a sensor', function(){
+    		SenseApi.callSensorPost({"sensor":{"name":"thermometer", "display_name":"Thermometer", "device_type":"TX-1000", "data_type":"float"}}).should.equal(true);
     	});
     	it('SenseApi.getResponseStatus() gets the response status', function(){
     		SenseApi.getResponseStatus().should.equal(201);
@@ -51,84 +51,84 @@ describe('CommonSense Javascript API Library', function(){
     
     // retrieving sensors
     describe('Retrieving Sensors', function(){
-    	it('SenseApi.SensorGet() retrieves details of a single sensor', function(){
-    		SenseApi.SensorGet(sensor_id).should.be.true;
+    	it('SenseApi.callSensorGet() retrieves details of a single sensor', function(){
+    		SenseApi.callSensorGet(sensor_id).should.be.true;
     	});
-    	it('SenseApi.SensorsGet() retrieves details of a list of sensors', function(){
-    		SenseApi.SensorsGet({'page':0, 'per_page':100, 'owned':1}).should.be.true;
+    	it('SenseApi.callSensorsGet() retrieves details of a list of sensors', function(){
+    		SenseApi.callSensorsGet({'page':0, 'per_page':100, 'owned':1}).should.be.true;
     	})
     });
     
     // environments
     describe('Environments', function() {
-    	it('SenseApi.EnvironmentPost() creates a new environment', function(){
-    		SenseApi.EnvironmentPost({"environment":{"name":"Sense","floors":"3","gps_outline":"50.1 4.1, 50.2 4.1, 50.2 4.2, 50.1 4.2, 50.1 4.1","position":"51.15 4.15"}}).should.be.true;
+    	it('SenseApi.callEnvironmentPost() creates a new environment', function(){
+    		SenseApi.callEnvironmentPost({"environment":{"name":"Sense","floors":"3","gps_outline":"50.1 4.1, 50.2 4.1, 50.2 4.2, 50.1 4.2, 50.1 4.1","position":"51.15 4.15"}}).should.be.true;
     	});
     	it('The Location header can be parsed for the environment_id of the created environment', function(){
     		environment_id = parseInt(SenseApi.getResponseHeader().Location.match(/\d+/)[0]);
     		environment_id.should.be.a('number');
     		environment_id.should.not.equal(0);
     	});
-    	it('SenseApi.EnvironmentGet() retrieves the details of an environment', function(){ 
-    		SenseApi.EnvironmentGet(environment_id).should.be.true;
+    	it('SenseApi.callEnvironmentGet() retrieves the details of an environment', function(){ 
+    		SenseApi.callEnvironmentGet(environment_id).should.be.true;
     	});
-    	it('SenseApi.EnvironmentSensorPost() adds a sensors to the environment', function() {
-    		SenseApi.EnvironmentSensorPost(environment_id, {'sensors':[{'id':sensor_id}]}).should.be.true;
+    	it('SenseApi.callEnvironmentSensorPost() adds a sensors to the environment', function() {
+    		SenseApi.callEnvironmentSensorPost(environment_id, {'sensors':[{'id':sensor_id}]}).should.be.true;
     	});
-    	it('SenseApi.EnvironmentSensorsGet() retrieves the sensors in an environment', function() {
-    		SenseApi.EnvironmentSensorsGet(environment_id).should.be.true;
+    	it('SenseApi.callEnvironmentSensorsGet() retrieves the sensors in an environment', function() {
+    		SenseApi.callEnvironmentSensorsGet(environment_id).should.be.true;
     	});
-    	it('SenseApi.EnvironmentDelete() deletes an environment', function (){
-    		SenseApi.EnvironmentDelete(environment_id).should.be.true;
+    	it('SenseApi.callEnvironmentDelete() deletes an environment', function (){
+    		SenseApi.callEnvironmentDelete(environment_id).should.be.true;
     	});
     });
     
     // devices
     describe('Devices', function(){
-    	it('SenseApi.SensorDevicePost() attaches a sensor to a device', function (){ 
-    		SenseApi.SensorDevicePost(sensor_id, {'device':{'type':'gizmo', 'uuid':'1234567890abcde'}}).should.be.true;
+    	it('SenseApi.callSensorDevicePost() attaches a sensor to a device', function (){ 
+    		SenseApi.callSensorDevicePost(sensor_id, {'device':{'type':'gizmo', 'uuid':'1234567890abcde'}}).should.be.true;
     	});
-    	it('SenseApi.DevicesGet() retrieves a list of devices', function (){ 
-    		SenseApi.DevicesGet({'page':0, 'per_page':100}).should.be.true;
+    	it('SenseApi.callDevicesGet() retrieves a list of devices', function (){ 
+    		SenseApi.callDevicesGet({'page':0, 'per_page':100}).should.be.true;
     	});
-    	it('SenseApi.SensorDeviceGet() retrieves the device a sensor is attached to', function() {
-    		SenseApi.SensorDeviceGet(sensor_id).should.be.true;
+    	it('SenseApi.callSensorDeviceGet() retrieves the device a sensor is attached to', function() {
+    		SenseApi.callSensorDeviceGet(sensor_id).should.be.true;
     	});
-    	it('SenseApi.SensorDeviceDelete() detaches a sensor from its device', function() {
-    		SenseApi.SensorDeviceDelete(sensor_id).should.be.true;
+    	it('SenseApi.callSensorDeviceDelete() detaches a sensor from its device', function() {
+    		SenseApi.callSensorDeviceDelete(sensor_id).should.be.true;
     	});
     });
     
     // do some metatag magic
     describe('Metatags', function(){
-    	it('SenseApi.SensorMetatagsPost() creates metatags for a sensor', function(){
-    		SenseApi.SensorMetatagsPost(sensor_id, "js_test", {"metatags": {"sensor_type":["test_sensor"]}}).should.be.true;
+    	it('SenseApi.callSensorMetatagsPost() creates metatags for a sensor', function(){
+    		SenseApi.callSensorMetatagsPost(sensor_id, "js_test", {"metatags": {"sensor_type":["test_sensor"]}}).should.be.true;
     	});
-    	it('SenseApi.SensorsMetatagsGet() retrieves sensors and their metatags', function(){
-    		SenseApi.SensorsMetatagsGet("js_test", {"details":"no"}).should.be.true;
+    	it('SenseApi.callSensorsMetatagsGet() retrieves sensors and their metatags', function(){
+    		SenseApi.callSensorsMetatagsGet("js_test", {"details":"no"}).should.be.true;
     	});
-    	it('SenseApi.SensorMetatagsPut() overwrites the list of metatags of a sensor', function(){
-    		SenseApi.SensorMetatagsPut(sensor_id, "js_test", {"metatags": {"magic_color":["black"]}}).should.be.true;
+    	it('SenseApi.callSensorMetatagsPut() overwrites the list of metatags of a sensor', function(){
+    		SenseApi.callSensorMetatagsPut(sensor_id, "js_test", {"metatags": {"magic_color":["black"]}}).should.be.true;
     	});
-    	it('SenseApi.SensorMetatagsGet() retrieves the metatags of a single sensor', function(){
-    		SenseApi.SensorMetatagsGet(sensor_id, "js_test").should.be.true;
+    	it('SenseApi.callSensorMetatagsGet() retrieves the metatags of a single sensor', function(){
+    		SenseApi.callSensorMetatagsGet(sensor_id, "js_test").should.be.true;
     	});
-    	it('SenseApi.SensorMetatagsDelete() deletes metatags of a sensor', function(){
-    		SenseApi.SensorMetatagsDelete(sensor_id, "js_test").should.be.true;
+    	it('SenseApi.callSensorMetatagsDelete() deletes metatags of a sensor', function(){
+    		SenseApi.callSensorMetatagsDelete(sensor_id, "js_test").should.be.true;
     	});
-    	it('SenseApi.SensorMetatagsGet() now returns an empty list of metatags', function(){
-    		SenseApi.SensorMetatagsGet(sensor_id, "js_test");
+    	it('SenseApi.callSensorMetatagsGet() now returns an empty list of metatags', function(){
+    		SenseApi.callSensorMetatagsGet(sensor_id, "js_test");
     		JSON.parse(SenseApi.getResponseData()).metatags.should.have.length(0);
     	});
     });
     
     // sensor data 
     describe('Sensor Data', function(){
-    	it('SenseApi.SensorDataPost() uploads data to a single sensor', function(){
-    		SenseApi.SensorDataPost(sensor_id, {'data':[{'value':10, 'date':1351771200}, {'value':20, 'date':1351771260}, {'value':30, 'date':1351771320}]}).should.be.true;
+    	it('SenseApi.callSensorDataPost() uploads data to a single sensor', function(){
+    		SenseApi.callSensorDataPost(sensor_id, {'data':[{'value':10, 'date':1351771200}, {'value':20, 'date':1351771260}, {'value':30, 'date':1351771320}]}).should.be.true;
     	});
-    	it('SenseApi.SensorDataGet() retrieves data for a single sensor', function(){
-    		SenseApi.SensorDataGet(sensor_id, {'start_date': 1351771199, 'end_date': 1351771321});
+    	it('SenseApi.callSensorDataGet() retrieves data for a single sensor', function(){
+    		SenseApi.callSensorDataGet(sensor_id, {'start_date': 1351771199, 'end_date': 1351771321});
     	});
     	it('The response data can be parsed for the retrieved data', function(){
     		JSON.parse(SenseApi.getResponseData()).data.should.have.length(3);
@@ -138,15 +138,15 @@ describe('CommonSense Javascript API Library', function(){
     
     // delete the sensor we created earlier
     describe('Deleting a Sensor', function(){
-    	it('SenseApi.SensorDelete() deletes a single sensor', function(){
-    		SenseApi.SensorDelete(sensor_id).should.be.true;
+    	it('SenseApi.callSensorDelete() deletes a single sensor', function(){
+    		SenseApi.callSensorDelete(sensor_id).should.be.true;
     	});
     });
     
     // logout
     describe('Logging out a Session Id', function(){
-    	it('SenseApi.LogoutSessionId() logs out the current session_id', function(){
-    		SenseApi.LogoutSessionId().should.equal(true);
+    	it('SenseApi.logoutSessionId() logs out the current session_id', function(){
+    		SenseApi.logoutSessionId().should.equal(true);
     	});
     	it('SenseApi.getSessionId() returns an empty string now', function(){
     		SenseApi.getSessionId().should.equal('');
