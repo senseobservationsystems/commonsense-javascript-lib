@@ -29,14 +29,27 @@
 				    }
 				}
 				
-				console.log(server + " ");
+				if (window.sessionStorage) {
+					sessionStorage.username = username;
+					sessionStorage.password = password;
+					sessionStorage.server   = server;
+				}
+				
 				document.getElementById('container').innerHTML = '';
     			mocha.run();
 			}
+    		
+    		function getCredentials() {
+    			if (sessionStorage.username)
+    				document.getElementById('username').value = sessionStorage.username;
+    			if (sessionStorage.password)
+    				document.getElementById('password').value = sessionStorage.password;
+    		} 
+    		    		
     	</script>
 
 	</head>
-	<body>
+	<body onload="javascript:getCredentials();">
 		<div class="container" id='container'>
 	    	<div class="t1">
 	      		<img src="img/logo-150.png" />
