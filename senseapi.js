@@ -61,7 +61,7 @@ var SenseApi = (function () {
     };
 
 // private variables
-	var request 			= getXMLHttpRequest();
+	
 	var session_id 			= "";
 	var response_status 	= 0;
 	var response_header 	= {};
@@ -72,6 +72,7 @@ var SenseApi = (function () {
 
 // private funtions
 	SenseApiCall = function (method, url, data, headers) {
+		var request = getXMLHttpRequest();	
 		if (request == false) {
 			error_code = 1;
 			return false;
