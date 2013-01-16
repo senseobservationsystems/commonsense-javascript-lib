@@ -516,6 +516,13 @@ var SenseApi = (function () {
             return false;
     };
 
+	api.callSensorPut = function (sensor_id, parameters) {
+		if (SenseApiCall("PUT", "/sensors/"+sensor_id+".json", parameters, []))
+			return true;
+		else
+			return false;
+	};
+
     api.callSensorsFind = function (namespace, parameters) {
         if (SenseApiCall("POST", "/sensors/find.json?namespace="+namespace, parameters, []))
             return true;
