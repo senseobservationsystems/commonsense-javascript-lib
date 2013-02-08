@@ -13,10 +13,10 @@
 	    <script src="mocha.js"></script>
 	    <script src="http://chaijs.com/chai.js" type="text/javascript"></script>
 	    <script src="https://raw.github.com/senseobservationsystems/commonsense-javascript-lib/master/senseapi.js" type="text/javascript"></script>
-<!-- 	<script src="../../senseapi.js"></script> -->  
+<!-- 	<script src="../../senseapi.js"></script> -->
 	    <script>mocha.setup('bdd')</script>
 	    <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
-	    <script src="test_senseapi.js"></script>
+	   	<script src="test_senseapi.js"></script>
     	<script type='text/javascript'>
     		function submitCredentials() {
 				username = document.getElementById('username').value;
@@ -40,6 +40,7 @@
 			}
     		
     		function getCredentials() {
+				console.log("herp")
     			if (sessionStorage.username)
     				document.getElementById('username').value = sessionStorage.username;
     			if (sessionStorage.password)
@@ -63,6 +64,7 @@
 							<tr>
 								<td>Live</td><td><input type="radio" name="server" value="live" checked/></td>
 								<td>Dev</td><td><input type="radio" name="server" value="dev"/></td>
+								<td>RC</td><td><input type="radio" name="server" value="rc"/></td>
 							</tr>
 						</table>
 						<input type="submit" name="action" value="Submit" class="btn-login btn-rounded" />
