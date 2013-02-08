@@ -196,6 +196,12 @@ var SenseApi = (function () {
             api_url = "http://api.dev.sense-os.nl";
             return true;
         }
+		else if (s == 'rc') {
+			server = s;
+			// NOTE: cant use https on rc server!
+			api_url = "http://api.rc.dev.sense-os.nl";
+			return true;
+		}
 
         return false;
     };
