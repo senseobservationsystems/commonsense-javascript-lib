@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/json2/20121008/json2.js"></script>
+    <script src="crypto.js"></script> 
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="../../senseapi.js"></script>
+    <script src="getParam.js"></script>
+    <script src="index.js"></script>
+
+    <style>
+      h1{
+        font-size:18px;
+        font-weight:bold;
+      }
+      h2{
+        font-size:16px;
+        font-weight:bold;
+      }
+      .row{
+        padding:10px;
+        margin-bottom:10px;
+        background-color:#eee;
+      }
+    </style>
+    </head>
+  <body>
+    <div id="wrap" style="width:600px;">
+      
+      <div class="row" style="background-color:#eee">
+        <h1>Log in</h1>
+        <input name="user" id="user"></input>
+        <input type="password" name="pass" id="pass"></input>
+        <button type="button" name="login" id="login">Log In</button>
+        <div>session id:<span id="sessionId"></span></div>
+      </div>
+      <div id="stuff">
+        <div class="row">
+          
+          <h1>Add sensor</h1>
+          <input id="newSensorName"></input>
+          <button type="button" id="addSensor">Add Sensor</button>
+        </div>
+        <div class="row">
+          <h1>Add metatag to sensor</h1> 
+          <select id="sensors">
+          </select>
+          <input id="newTagName" placeholder="tag name"></input>
+          <input id="newTagValue" placeholder="tag value"></input>
+          <button type="button" id="addTag">Add Tag</button>
+        </div>
+        <div id="showTag" class="row">
+          <h1>Metatags for all sensors</h1>
+          <div style="padding:10px;margin-top:10px;background-color:#ddd;" id="output"></div> 
+        </div>
+      </div>
+    </div>
+    
+
+  </body>
+</html>
