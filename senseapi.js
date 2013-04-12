@@ -730,7 +730,7 @@ var SenseApi = (function () {
     };
     
     api.callUserPost = function (parameters) {
-    	if (SenseApiCall("POST", "/users/"+user_id+".json", parameters, []))
+    	if (SenseApiCall("POST", "/users.json", parameters, []))
     		return true;
     	else
     		return false;
