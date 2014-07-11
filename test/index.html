@@ -43,6 +43,7 @@
 
 <p id="sessionId"></p>
 
+<p id="sensorCreate"></p>
 
 <script language="javascript">
 
@@ -62,21 +63,47 @@ $(document).ready(function() {
 				createSessionSuccessCB = function(result) {
 					console.log("Success", result);
 					$("#sessionId").text("Session id: " + result);
+					createSensor();
 				};
 
-				createSessionErrorCB = function() {
-					console.log("Error");
+				generalErrorCB = function(msg) {
+					console.log("Error: ", msg);
 				};
 
-				var username = $("#username").val();
-				var password = $("#md5hash").val();
-				s.createSession(username, password, createSessionSuccessCB, createSessionErrorCB);
+				createSensor = function() {
+					var data = {"sensor": 
+						{
+							"name": "memo",
+							"display_name": "memo beacon",
+							"device_type": "BLE Memo, nRF51822",
+							"data_type": "string"
+						}
+					}
+					s.createSensor(data, createSensorSuccessCB, generalErrorCB);
+				};
 
+				createSensorSuccessCB = function(result) {
+					console.log(result);
+					// it is much safer to use a JSON parser, but for the purpose of example code:
+					var obj = eval('(' + result + ')');
+					var exists = obj && obj.sensor && obj.sensor.id;
+					if (exists) {
+						var sensor_id = obj.sensor.id;
+						$("#sensorCreate").text("Sensor id created: " + sensor_id);
+					} else {
+						console.log("Response couldn't be parsed or does not have sensor id field");
+					}
+				};
+
+				createSession = function() {
+					var username = $("#username").val();
+					var password = $("#md5hash").val();
+					s.createSession(username, password, createSessionSuccessCB, generalErrorCB);
+				}
+
+				createSession();
 			});
 		});
-
-
-
 })
 
 </script>
