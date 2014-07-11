@@ -204,556 +204,556 @@ var SenseApi = (function () {
 
 	/// A U T H E N T I C A T I O N ///
 
-	api.createSession = function (username, password) {
+	api.createSession = function (username, password, successCB, errorCB) {
 		var data = {"username":username, "password":password};
 		if (SenseApiCall("POST", "/login.json", data, [])) {
 			session_id = response_header['X-SESSION_ID'];
-			return true;
+			successCB(session_id);
 		}
 		else {
-			return false;
+			errorCB();
 		}
 	};
 
-	api.deleteSession = function () {
+	api.deleteSession = function (successCB, errorCB) {
 		if (SenseApiCall("POST", "/logout.json", {}, [])) {
 			session_id = "";
-			return true;
+			successCB();
 		}
 		else {
-			return false;
+			errorCB();
 		}
 	};
 
 
 	/// D A T A  P R O C E S S O R S ///
 
-	api.dataProcessor = function (processor_id) {
+	api.dataProcessor = function (processor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/dataprocessors/"+processor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.dataProcessors = function (parameters) {
+	api.dataProcessors = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/dataprocessors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createDataProcessor = function (parameters) {
+	api.createDataProcessor = function (parameters, successCB, errorCB) {
 		if(SenseApiCall("POST", "/dataprocessors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateDataProcessor = function (parameters, processor_id) {
+	api.updateDataProcessor = function (parameters, processor_id, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/dataprocessors/"+processor_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteDataProcessor = function (processor_id) {
+	api.deleteDataProcessor = function (processor_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/dataprocessors/"+processor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// D A T A  P R O C E S S O R S  &  F I L E S ///
 
-	api.dataProcessorsFiles = function () {
+	api.dataProcessorsFiles = function (successCB, errorCB) {
 		if (SenseApiCall("GET", "/dataprocessors/files/", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.dataProcessorsFile = function (filename) {
+	api.dataProcessorsFile = function (filename, successCB, errorCB) {
 		if (SenseApiCall("GET", "/dataprocessors/files/"+filename, {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createDataProcessorsFile = function (filename, filedata) {
+	api.createDataProcessorsFile = function (filename, filedata, successCB, errorCB) {
 		if (SenseApiCall("POST", "/dataprocessors/files/"+filename, filedata, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateDataProcessorsFile = function (filename, filedata) {
+	api.updateDataProcessorsFile = function (filename, filedata, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/dataprocessors/files/"+filename, filedata, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteDataProcessorsFile = function (filename) {
+	api.deleteDataProcessorsFile = function (filename, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/dataprocessors/files/"+filename, {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 	/// D E V I C E S ///
 
-	api.devices = function (parameters) {
+	api.devices = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/devices.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.device = function(device_id) {
+	api.device = function(device_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/devices/"+device_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deviceSensors = function (device_id, parameters) {
+	api.deviceSensors = function (device_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/devices/"+device_id+"/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// E N V I R O N M E N T S ///
 
-	api.environments = function () {
+	api.environments = function (successCB, errorCB) {
 		if (SenseApiCall("GET", "/environments.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.environment = function (environment_id) {
+	api.environment = function (environment_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/environments/"+environment_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createEnvironment = function (parameters) {
+	api.createEnvironment = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/environments.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateEnvironment = function (environment_id, parameters) {
+	api.updateEnvironment = function (environment_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/environments/"+environment_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteEnvironment = function (environment_id) {
+	api.deleteEnvironment = function (environment_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/environments/"+environment_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	// E N V I R O N M E N T S  &  S E N S O R S ///
 
-	api.environmentSensors = function (environment_id, parameters) {
+	api.environmentSensors = function (environment_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/environments/"+environment_id+"/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createEnvironmentSensor = function (environment_id, parameters) {
+	api.createEnvironmentSensor = function (environment_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/environments/"+environment_id+"/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteEnvironmentSensor = function (environment_id, sensor_id) {
+	api.deleteEnvironmentSensor = function (environment_id, sensor_id, successCB, errorCB) {
 		if (SenseApiCall("POST", "/environments/"+environment_id+"/sensors/"+sensor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 	/// G R O U P S ///
 
-	api.allGroups = function (parameters) {
+	api.allGroups = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups/all.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.groups = function (parameters) {
+	api.groups = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.group = function (group_id) {
+	api.group = function (group_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups/"+group_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createGroup = function (parameters) {
+	api.createGroup = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/groups.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateGroup = function (group_id, parameters) {
+	api.updateGroup = function (group_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/groups/"+group_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteGroup = function (group_id) {
+	api.deleteGroup = function (group_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/groups/"+group_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// G R O U P S  &  U S E R S ///
 
-	api.groupUsers = function (group_id, parameters) {
+	api.groupUsers = function (group_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups/"+group_id+"/users.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.groupUser = function (group_id, user_id) {
+	api.groupUser = function (group_id, user_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups/"+group_id+"/users/"+user_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createGroupUser = function (group_id, parameters) {
+	api.createGroupUser = function (group_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/groups/"+group_id+"/users.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateGroupUser = function (group_id, user_id, parameters) {
+	api.updateGroupUser = function (group_id, user_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/groups/"+group_id+"/users/"+user_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteGroupUser = function (group_id, user_id) {
+	api.deleteGroupUser = function (group_id, user_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/groups/"+group_id+"/users/"+user_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// G R O U P S  &  S E N S O R S ///
 
-	api.groupSensors = function (group_id, parameters) {
+	api.groupSensors = function (group_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/groups/"+group_id+"/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createGroupSensor = function (group_id, parameters) {
+	api.createGroupSensor = function (group_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/groups/"+group_id+"/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteGroupSensor = function (group_id, sensor_id) {
+	api.deleteGroupSensor = function (group_id, sensor_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/groups/"+group_id+"/sensors/"+sensor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// S E N S O R S ///
 
-	api.sensors = function (parameters) {
+	api.sensors = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensor = function (sensor_id) {
+	api.sensor = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensor = function (parameters) {
+	api.createSensor = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateSensor = function (sensor_id, parameters) {
+	api.updateSensor = function (sensor_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/sensors/"+sensor_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteSensor = function (sensor_id) {
+	api.deleteSensor = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/sensors/"+sensor_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorsFind = function (namespace, parameters) {
+	api.sensorsFind = function (namespace, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/find.json?namespace="+namespace, parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// S E N S O R S  &  D A T A ///
 
-	api.sensorData = function (sensor_id, parameters) {
+	api.sensorData = function (sensor_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/data.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorData = function (sensor_id, data) {
+	api.createSensorData = function (sensor_id, data, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/data.json", data, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorsData = function (data) {
+	api.createSensorsData = function (data, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/data.json", data, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteSensorData = function (sensor_id, data_id) {
+	api.deleteSensorData = function (sensor_id, data_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/data/"+data_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 	/// S E N S O R S  &  E N V I R O N M E N T S ///
 
-	api.sensorEnvironment = function (sensor_id) {
+	api.sensorEnvironment = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/environment.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// S E N S O R S  &  D E V I C E S ///
 
-	api.sensorDevice = function (sensor_id) {
+	api.sensorDevice = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/device.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorDevice = function (sensor_id, parameters) {
+	api.createSensorDevice = function (sensor_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/device.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteSensorDevice = function (sensor_id) {
+	api.deleteSensorDevice = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/device.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// S E N S O R S  &  S E R V I C E S ///
 
-	api.sensorsAvailableServices = function () {
+	api.sensorsAvailableServices = function (successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/services/available.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorAvailableServices = function (sensor_id) {
+	api.sensorAvailableServices = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/services/available.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorRunningServices = function (sensor_id) {
+	api.sensorRunningServices = function (sensor_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/services.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorService = function (sensor_id, parameters) {
+	api.createSensorService = function (sensor_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteSensorService = function (sensor_id, service_id) {
+	api.deleteSensorService = function (sensor_id, service_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/services/"+service_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorServiceMethods = function (sensor_id, service_id) {
+	api.sensorServiceMethods = function (sensor_id, service_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/services/"+service_id+"/methods.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorServiceLearn = function (sensor_id, service_id, parameters) {
+	api.sensorServiceLearn = function (sensor_id, service_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/manualLearn.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.sensorServiceMethod = function (sensor_id, service_id, method_name, parameters) {
+	api.sensorServiceMethod = function (sensor_id, service_id, method_name, parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/services/"+service_id+"/"+method_name+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorServiceMethod = function (sensor_id, service_id, method_name, parameters) {
+	api.createSensorServiceMethod = function (sensor_id, service_id, method_name, parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/services/"+service_id+"/"+method_name+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// M E T A T A G S ///
 
-	api.sensorsMetatags = function (namespace, parameters) {
+	api.sensorsMetatags = function (namespace, parameters, successCB, errorCB) {
 		var ns = (namespace != null) ? namespace : "default";
 		parameters.namespace = ns
 			if (SenseApiCall("GET", "/sensors/metatags.json", parameters, []))
-				return true;
+				successCB();
 			else
-				return false;
+				errorCB();
 	};
 
-	api.sensorMetatags = function (sensor_id, namespace) {
+	api.sensorMetatags = function (sensor_id, namespace, successCB, errorCB) {
 		var ns = (namespace != null) ? namespace : "default";
 		if (SenseApiCall("GET", "/sensors/"+sensor_id+"/metatags.json", {'namespace':ns}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createSensorMetatags = function (sensor_id, namespace, metatags) {
+	api.createSensorMetatags = function (sensor_id, namespace, metatags, successCB, errorCB) {
 		var ns = (namespace != null) ? namespace : "default";
 		if (SenseApiCall("POST", "/sensors/"+sensor_id+"/metatags.json?namespace="+ns, metatags, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateSensorMetatags = function (sensor_id, namespace, metatags) {
+	api.updateSensorMetatags = function (sensor_id, namespace, metatags, successCB, errorCB) {
 		var ns = (namespace != null) ? namespace : "default";
 		if (SenseApiCall("PUT", "/sensors/"+sensor_id+"/metatags.json?namespace="+ns, metatags, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteSensorMetatags = function (sensor_id, namespace) {
+	api.deleteSensorMetatags = function (sensor_id, namespace, successCB, errorCB) {
 		var ns = (namespace != null) ? namespace : "default";
 		if (SenseApiCall("DELETE", "/sensors/"+sensor_id+"/metatags.json", {'namespace':ns}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 
 	/// U S E R S ///
 
-	api.userCurrent = function () {
+	api.userCurrent = function (successCB, errorCB) {
 		if (SenseApiCall("GET", "/users/current.json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.users = function (parameters) {
+	api.users = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("GET", "/users.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.user = function (user_id) {
+	api.user = function (user_id, successCB, errorCB) {
 		if (SenseApiCall("GET", "/users/"+user_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.createUser = function (parameters) {
+	api.createUser = function (parameters, successCB, errorCB) {
 		if (SenseApiCall("POST", "/users.json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.updateUser = function (user_id, parameters) {
+	api.updateUser = function (user_id, parameters, successCB, errorCB) {
 		if (SenseApiCall("PUT", "/users/"+user_id+".json", parameters, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
-	api.deleteUser = function (user_id) {
+	api.deleteUser = function (user_id, successCB, errorCB) {
 		if (SenseApiCall("DELETE", "/users/"+user_id+".json", {}, []))
-			return true;
+			successCB();
 		else
-			return false;
+			errorCB();
 	};
 
 

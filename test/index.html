@@ -1,0 +1,84 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>CommonSense Javascript library Test</title>
+<style>
+.cs_input {
+	background: blue;
+}
+.cs_result {
+//	background: gray;
+}
+</style>
+
+<script language="javascript" src="../senseapi.js"></script>
+<script language="javascript" src="../lib/json2.js"></script>
+<script language="javascript" src="../lib/md5.js"></script>
+<script language="javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>Test the CommonSense Javascript library. </h1>
+
+<h2>Enter your session information</h2>
+
+<form name="account">
+	<table class="cs_input">
+		<tr>
+			<td>
+				<input id="username" name="username" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="md5hash" name="md5hash" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="sessionBtn" type="submit" value="Submit"></input>
+			</td>
+		</tr>
+	</table>
+</form>
+	
+<br/>
+<h2>Result</h2>
+
+<p id="sessionId"></p>
+
+
+<script language="javascript">
+
+$(document).ready(function() {
+
+		$("#username").val("Your username");
+		$("#md5hash").val("Your md5hash");
+
+		// btn click event
+		$(function() {
+			$( "#sessionBtn" ).click(function( event ) {
+				event.preventDefault();
+				console.log("Clicked button");
+
+				// create Sense API object
+				var s = SenseApi;
+				createSessionSuccessCB = function(result) {
+					console.log("Success", result);
+					$("#sessionId").text("Session id: " + result);
+				};
+
+				createSessionErrorCB = function() {
+					console.log("Error");
+				};
+
+				var username = $("#username").val();
+				var password = $("#md5hash").val();
+				s.createSession(username, password, createSessionSuccessCB, createSessionErrorCB);
+
+			});
+		});
+
+
+
+})
+
+</script>
+</body>
+</html>
