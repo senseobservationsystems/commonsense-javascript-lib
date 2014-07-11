@@ -15,7 +15,7 @@ There are two dependencies, `json2.js` and `md5.js`, which can be found at [JSON
 
 This library can be used in the browser and in for example Cordova and other javascript frameworks on cross-platform mobile devices.
 
-When available in your project, the following is a typical beginning of a usecase.
+The following is a typical beginning of a use case.
 
 ````javascript
   var s = SenseAPI;
@@ -24,10 +24,10 @@ When available in your project, the following is a typical beginning of a usecas
 ````
 See the example in the `test` directory.
 
-The following api calls on the Sense object are implemented.
+The following api calls on the SenseAPI object are implemented.
 The calls follow the REST-style with the verbs (create, update, delete) prefixed.
 An index (list) action corresponds with the plural form and a single get with the single form.
-The callback is of the form `next(err, response)`.
+The callback is of the form `successCB, errorCB`.
 The `data` argument is an optional object of headers.
 
 ```javascript
@@ -64,7 +64,7 @@ The `data` argument is an optional object of headers.
   # E N V I R O N M E N T S  &  S E N S O R S #
   environmentSensors(id, [ data, ], successCB, errorCB)
   createEnvironmentSensor(id, [ data, ], successCB, errorCB)
-  deleteEnvironmentSensor(id, sensor,, successCB, errorCB)
+  deleteEnvironmentSensor(id, sensor, successCB, errorCB)
 
   # G R O U P S #
   allGroups([ data, ], successCB, errorCB)
@@ -84,7 +84,7 @@ The `data` argument is an optional object of headers.
   # G R O U P S  &  S E N S O R S #
   groupSensors(id, [ data, ], successCB, errorCB)
   createGroupSensor(id, [ data, ], successCB, errorCB)
-  deleteGroupSensor(id, sensor,, successCB, errorCB)
+  deleteGroupSensor(id, sensor, successCB, errorCB)
 
   # S E N S O R S #
   sensors([ data, ], successCB, errorCB)
@@ -103,6 +103,7 @@ The `data` argument is an optional object of headers.
 
   # S E N S O R S  &  E N V I R O N M E N T S #
   sensorEnvironments(id, [ data, ], successCB, errorCB)
+
   # S E N S O R S  &  D E V I C E S #
   sensorDevice(id, [ data, ], successCB, errorCB)
   createSensorDevice(id, [ data, ], successCB, errorCB)
@@ -116,7 +117,7 @@ The `data` argument is an optional object of headers.
   deleteSensorService(id, service, successCB, errorCB)
   sensorServiceMethods(id, service, successCB, errorCB)
   sensorServiceLearn(id, service, [ data, ], successCB, errorCB)
-  sensorServiceMethod(id, service, method,, successCB, errorCB)
+  sensorServiceMethod(id, service, method, successCB, errorCB)
   createSensorServiceMethod(id, service, method, [ data, ], successCB, errorCB)
 
   # M E T A T A G S #
@@ -137,6 +138,10 @@ The `data` argument is an optional object of headers.
 
 ## Copyright
 
-Freek van Polen, Sense B.V., http://sense-os.nl
-Roemer Vlasveld, Almende B.V., http://almende.com
-Anne C. van Rossum, DoBots B.V., http://dobots.nl
+* Freek van Polen, Sense B.V., http://sense-os.nl
+* Roemer Vlasveld, Almende B.V., http://almende.com
+* Anne C. van Rossum, DoBots B.V., http://dobots.nl
+
+Copyrights belong to the corresponding companies.
+
+License: Apache 2.0

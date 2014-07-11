@@ -39,44 +39,153 @@
 </form>
 	
 <br/>
-<h2>Result</h2>
+<h2>Session</h2>
 
-<p id="sessionId"></p>
+<p id="sessionId">First start session</p>
+
+<h2>Create sensor</h2>
+<form name="sensor">
+	<table class="cs_input">
+		<tr>
+			<td>
+				<input id="sensorName" name="sensorname" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="sensorDisplayName" name="displayname" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="sensorDeviceType" name="devicetype" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="sensorDataType" name="datatype" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="createSensorBtn" type="submit" value="Submit"></input>
+			</td>
+		</tr>
+	</table>
+</form>
 
 <p id="sensorCreate"></p>
+
+<h2>Add sensor data</h2>
+<form name="data">
+	<table class="cs_input">
+		<tr>
+			<td>
+				<input id="sensorId" name="sensorid" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="dataAuthor" name="dataauthor" type="text" size="40" value="">
+			</td>
+			<td>
+				<input id="dataMessage" name="datamessage" type="text" size="100" value="">
+			</td>
+			<td>
+				<input id="createSensorDataBtn" type="submit" value="Submit"></input>
+			</td>
+		</tr>
+	</table>
+</form>
+
 
 <script language="javascript">
 
 $(document).ready(function() {
 
-		$("#username").val("Your username");
-		$("#md5hash").val("Your md5hash");
+		$("#username").val("memo@dodedodo.com");
+		$("#md5hash").val("280100a8f0ccdc22cb3ee1c9e268aaf7"); // example account... password: memonic 
+		
+		$("#sensorName").val("memo");
+		$("#sensorDisplayName").val("Memo BLE beacon");
+		$("#sensorDeviceType").val("nRF58122-based BLE device");
+		$("#sensorDataType").val("json");
+		
+		$("#dataAuthor").val("Can you bring milk from the supermarket?");
+		$("#dataMessage").val("Loes");
+				
+		var s = SenseApi;
 
 		// btn click event
 		$(function() {
 			$( "#sessionBtn" ).click(function( event ) {
 				event.preventDefault();
-				console.log("Clicked button");
+				console.log("Clicked session start button");
 
 				// create Sense API object
-				var s = SenseApi;
 				createSessionSuccessCB = function(result) {
 					console.log("Success", result);
 					$("#sessionId").text("Session id: " + result);
-					createSensor();
 				};
 
 				generalErrorCB = function(msg) {
 					console.log("Error: ", msg);
 				};
 
+				createUser = function() {
+					var username = $("#username").val();
+					var password = $("#md5hash").val();
+					var user = {
+						"user": {
+							"email": username,
+							"username": username,
+							"name": "",
+							"surname": "",
+							"mobile": "",
+							"password": password
+						}
+					}
+					s.createUser(user, createUserSuccessCB, generalErrorCB);
+				}
+
+				createUserSuccessCB = function(result) {
+					console.log(result);
+					var obj = eval('(' + result + ')');
+					var exists = obj && obj.user && obj.user.id;
+					if (exists) {
+						console.log("Create user with id: " + obj.user.id);
+						createSession();
+					} else {
+						console.log("Could not create user");
+					}
+				}
+
+				createSession = function() {
+					var username = $("#username").val();
+					var password = $("#md5hash").val();
+					s.createSession(username, password, createSessionSuccessCB, createSessionErrorCB);
+				}
+
+				createSessionErrorCB = function() {
+					console.log("Could not log in, try to create the user");
+					createUser();
+				}
+
+				createSession();
+			});
+		});
+
+		// btn click event to create a sensor
+		$(function() {
+			$( "#createSensorBtn" ).click(function( event ) {
+				event.preventDefault();
+				console.log("Clicked create sensor button");
+				
+				generalErrorCB = function(msg) {
+					console.log("Error: ", msg);
+				};
+				
 				createSensor = function() {
+					var sensorName = $("#sensorName").val();
+					var sensorDisplayName = $("#sensorDisplayName").val();
+					var sensorDeviceType = $("#sensorDeviceType").val();
+					var sensorDataType = $("#sensorDataType").val();
 					var data = {"sensor": 
 						{
-							"name": "memo",
-							"display_name": "memo beacon",
-							"device_type": "BLE Memo, nRF51822",
-							"data_type": "string"
+							"name": sensorName,
+							"display_name": sensorDisplayName,
+							"device_type": sensorDeviceType,
+							"data_type": sensorDataType
 						}
 					}
 					s.createSensor(data, createSensorSuccessCB, generalErrorCB);
@@ -90,19 +199,50 @@ $(document).ready(function() {
 					if (exists) {
 						var sensor_id = obj.sensor.id;
 						$("#sensorCreate").text("Sensor id created: " + sensor_id);
+						$("#sensorId").val(sensor_id);
 					} else {
 						console.log("Response couldn't be parsed or does not have sensor id field");
 					}
 				};
 
-				createSession = function() {
-					var username = $("#username").val();
-					var password = $("#md5hash").val();
-					s.createSession(username, password, createSessionSuccessCB, generalErrorCB);
-				}
-
-				createSession();
+				createSensor();
 			});
+		});
+
+		// btn click event to create sensor data
+		$(function() {
+			$( "#createSensorDataBtn" ).click(function( event ) {
+				event.preventDefault();
+				console.log("Clicked create sensor button");
+				
+				generalErrorCB = function(msg) {
+					console.log("Error: ", msg);
+				};
+				
+				createSensorData = function() {
+					var id = $("#sensorId").val();
+					var author = $("#dataAuthor").val();
+					var msg = $("#dataMessage").val();
+					var value = 
+					{
+						"text": msg,
+						"author": author
+					}
+					var data = {"data": 
+						{
+							"value": value
+						}
+					}
+					console.log("To sensor " + id + " add data ", data);
+					s.createSensorData(id, data, createSensorDataSuccessCB, generalErrorCB);
+				};
+
+				createSensorDataSuccessCB = function(result) {
+					console.log("Added data successfully", result);
+				};
+
+				createSensorData();
+			});		
 		});
 })
 
