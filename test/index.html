@@ -38,7 +38,8 @@
 	</table>
 </form>
 	
-<br/>
+<p> You can log in with this session information on the <a href="https://common.sense-os.nl/">Common Sense</a> platform to see what data has been sent to the server. Of course, change the credentials, as soon as you want to start the <a href="http://www.sense-os.nl/">Sense</a> services for yourself.</p>
+
 <h2>Session</h2>
 
 <p id="sessionId">First start session</p>
@@ -79,7 +80,7 @@
 				<input id="dataAuthor" name="dataauthor" type="text" size="40" value="">
 			</td>
 			<td>
-				<input id="dataMessage" name="datamessage" type="text" size="100" value="">
+				<input id="dataMessage" name="datamessage" type="text" size="87" value="">
 			</td>
 			<td>
 				<input id="createSensorDataBtn" type="submit" value="Submit"></input>
@@ -101,8 +102,8 @@ $(document).ready(function() {
 		$("#sensorDeviceType").val("nRF58122-based BLE device");
 		$("#sensorDataType").val("json");
 		
-		$("#dataAuthor").val("Can you bring milk from the supermarket?");
-		$("#dataMessage").val("Loes");
+		$("#dataMessage").val("Can you bring milk from the supermarket?");
+		$("#dataAuthor").val("Loes");
 				
 		var s = SenseApi;
 
