@@ -1,6 +1,3 @@
-
-*This module is under heavy development.*
-
 # Commonsense API module
 
 Retrieve information from the [CommonSense](http://www.sense-os.nl/commonsense) platform.
